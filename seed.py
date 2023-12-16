@@ -1,6 +1,6 @@
 from datetime import datetime
 from app import app
-from models import db, User, Post  
+from models import db, User, Post, Tag, PostTag
 
 db.drop_all()
 db.create_all()
@@ -14,9 +14,28 @@ new_post = Post(
     user_id=1  
 )
 
+new_tag1 = Tag(
+    name= 'funny'
+)
+
+new_tag2 = Tag(
+    name= 'SAD'
+)
+
+new_post_tag1 = PostTag(
+    post_id=1,
+    tag_id=1)
+
+new_post_tag2 = PostTag(
+    post_id=1,
+    tag_id=2)
+
 
 
 db.session.add(new_user)
 db.session.add(new_post)
+db.session.add_all([new_tag1, new_tag2])
+db.session.commit()
+db.session.add_all([new_post_tag1, new_post_tag2])
 db.session.commit()
 
