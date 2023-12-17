@@ -9,7 +9,18 @@
     <p>Content: {{ post.content }}</p>
     <p>Created At: {{ post.created_at }}</p>
   </div>
-  
+  <h2>Tags</h2>
+  <div>
+    <ul>
+    {% for tags in post.post_tags %}
+    <li>
+      <a href="/tags/{{tags.tag.id}}">{{ tags.tag.name }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  </div>
+  <br>
+
   <div>
     <a href="{{ url_for('view_edit_post', post_id=post.id) }}"><button>Edit</button></a>
     <form action="{{ url_for('delete_post', post_id=post.id) }}" method="post" style="display: inline-block;">
@@ -17,4 +28,6 @@
     </form>
     <a href="{{ url_for('view_user', user_id=post.user_id) }}"><button>Back to User</button></a>
   </div>
+
+
 {% endblock %}

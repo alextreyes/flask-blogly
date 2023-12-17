@@ -53,7 +53,7 @@ class Post(db.Model):
                          nullable=False)
 
 
-    post_tags = db.relationship("PostTag", backref='post')
+    post_tags = db.relationship("PostTag", backref='post',cascade='all, delete-orphan')
 
 class Tag(db.Model):
     """Tag Model"""
@@ -66,7 +66,7 @@ class Tag(db.Model):
     name = db.Column(db.String, 
                      nullable=False, 
                      unique=True)
-    post_tags = db.relationship("PostTag", backref='tag')
+    post_tags = db.relationship("PostTag", backref='tag', cascade='all, delete-orphan')
 
 class PostTag(db.Model):
     """PostTag Model"""

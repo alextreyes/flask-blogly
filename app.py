@@ -106,13 +106,15 @@ def create_post(user_id):
 def view_post(post_id):
     """Shows a post with edit and delete buttons."""
     post = Post.query.get_or_404(post_id)
+
     return render_template('post_details.html', post=post)
 
 @app.route('/posts/<int:post_id>/edit', methods=['GET'])
 def view_edit_post(post_id):
     """Shows form to edit a post."""
     post = Post.query.get_or_404(post_id)
-    return render_template('edit_post.html', post=post)
+    tags = Tag.query.all()
+    return render_template('edit_post.html', post=post, tags=tags)
 
 @app.route('/posts/<int:post_id>/edit', methods=['POST'])
 def edit_post(post_id):
@@ -120,6 +122,12 @@ def edit_post(post_id):
     post = Post.query.get_or_404(post_id)
     post.title = request.form['title']
     post.content = request.form['content']
+    selected_tags = request.form.getlist('tags')
+
+    for tag_id in selected_tags:
+        new_post_tag = PostTag(post_id=post_id, tag_id=tag_id)
+        db.session.add(new_post_tag)
+
 
     db.session.commit()
     return redirect(f"/posts/{post_id}")
@@ -140,6 +148,59 @@ def show_tags():
     """shows all tags"""
     tags = Tag.query.all()
     return render_template("tag_list.html", tags=tags) 
+
+@app.route("/tags/<int:tag_id>")
+def tag_details(tag_id):
+    """shows tag details"""
+
+    tag = Tag.query.get_or_404(tag_id)
+    return render_template("tag_details.html", tag=tag)
+
+@app.route("/tags/<int:tag_id>/edit", methods=['GET'])
+def edit_tag(tag_id):
+    """shows edit form"""
+    tag = Tag.query.get_or_404(tag_id)
+    return render_template('edit_tag.html', tag=tag)
+
+
+@app.route("/tags/<int:tag_id>/edit", methods=['POST'])
+def tag_edit(tag_id):
+    """edit tags"""
+    tag = Tag.query.get_or_404(tag_id)
+    tag.name = request.form['name']
+
+    db.session.commit()
+    return redirect(f"/tags/{tag_id}")
+
+@app.route('/tags/<int:tags_id>/delete', methods=["POST"])
+def tags_destroy(tags_id):
+    """Handle form submission for deleting an existing tag"""
+
+    tag = Tag.query.get_or_404(tags_id)
+    db.session.delete(tag)
+    db.session.commit()
+
+    return redirect("/tags")
+
+@app.route('/tags/new', methods=['GET'])
+def new_tag_form():
+    """creates a new tag"""
+    return render_template('new_tag.html')
+
+@app.route("/tags/new", methods=["POST"])
+def create_tag():
+    """Creates a new tag."""
+    name = request.form["name"]
+
+    new_tag = Tag(name=name)
+    db.session.add(new_tag)
+    db.session.commit()
+    return redirect("/tags")
+
+
+
+
+
 
 
 
